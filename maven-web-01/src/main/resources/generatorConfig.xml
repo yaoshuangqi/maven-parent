@@ -1,0 +1,48 @@
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <!--指定特定数据库的jdbc驱动jar包位置-->
+    <classPathEntry location="E:\apache-maven-3.3.3\idea_maven\repository\mysql\mysql-connector-java\5.1.45\mysql-connector-java-5.1.45.jar"/>
+    <context id="default" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <property name="suppressDate" value="true" />
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+        <!-- 数据库连接 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost/petmanager"
+                        userId="root" password="root">
+        </jdbcConnection>
+
+        <!-- 非必需 默认false，把JDBC DECIMAL 和 NUMERIC 类型解析为 Integer，为 true时把JDBC DECIMAL 和
+            NUMERIC 类型解析为java.math.BigDecimal -->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- Model生成规则 -->
+        <javaModelGenerator targetPackage="com.ysq.generator.entity"
+                            targetProject="E://idea_2018//Workspace//JavaWebWorkSpace//maven-parent//maven-web-02//src//main//java">
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+        <!--Mapper文件生成-->
+        <sqlMapGenerator targetPackage="com.ysq.generator.mapper"
+                         targetProject="E://idea_2018//Workspace//JavaWebWorkSpace//maven-parent//maven-web-02//src//main//java"/>
+        <!-- dao 规则 -->
+        <javaClientGenerator targetPackage="com.ysq.generator.dao"
+                             targetProject="E://idea_2018//Workspace//JavaWebWorkSpace//maven-parent//maven-web-02//src//main//java"
+                             type="XMLMAPPER" >
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+
+        <table tableName="%" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+
+            <!--<domainObjectRenamingRule searchString="^tb" replaceString="" />-->
+            <generatedKey column="id" sqlStatement="Mysql"/>
+        </table>
+    </context>
+</generatorConfiguration>
