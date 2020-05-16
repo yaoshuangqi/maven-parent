@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd" default-lazy-init="true">
+
+    <!--启动自动扫包,使用注解-->
+    <context:component-scan base-package="com.quanroon.ysq"/>
+
+    <bean id="getBeanTest" class="com.quanroon.ysq.bean.GetBeanTest">
+        <meta key="keyTest" value="valueTTTTT"/>
+        <!--<lookup-method name="getUserBean" bean="teacher"/>-->
+        <lookup-method name="getUserBean" bean="student"/>
+    </bean>
+
+    <bean id="teacher" class="com.quanroon.ysq.bean.Teacher">
+        <qualifier value="tt"/>
+    </bean>
+    <bean id="student" class="com.quanroon.ysq.bean.Student" />
+
+</beans>

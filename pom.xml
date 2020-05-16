@@ -13,6 +13,7 @@
         <module>maven-web-01</module>
         <module>maven-web-02</module>
         <module>maven-springboot-swagger2</module>
+        <module>maven-spring-resource-study</module>
     </modules>
 
     <!--多模块管理方式，父工程的packaing只能是pom-->
@@ -29,7 +30,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.4.RELEASE</version>
+        <version>2.0.6.RELEASE</version>
     </parent>
     <!--依赖管理标签-->
     <dependencyManagement>
