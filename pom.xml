@@ -14,6 +14,9 @@
         <module>maven-web-02</module>
         <module>maven-springboot-swagger2</module>
         <module>maven-spring-resource-study</module>
+        <module>maven-springboot-rocketmq</module>
+        <module>maven-springboot-starter</module>
+        <module>maven-springboot-contraint-validate</module>
     </modules>
 
     <!--多模块管理方式，父工程的packaing只能是pom-->
@@ -33,6 +36,7 @@
         <version>2.0.6.RELEASE</version>
     </parent>
     <!--依赖管理标签-->
+    <!--子模块继承之后，提供作用：锁定版本+子module不用groupId和version-->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -50,6 +54,24 @@
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-version}</version>
+            </dependency>
+
+            <!-- 导入Spring Cloud的依赖管理 使用在 rocketmq模块中-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Finchley.SR1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 此依赖应用于阿里的nacos服务，导入alibaba oud的依赖管理，2.0版本与Finchley对应-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>2.0.1.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
