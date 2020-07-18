@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>maven-parent</artifactId>
+        <groupId>com.quanroon.ysq</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>maven-springboot-starter</artifactId>
+    <description>
+        自定义starter组件，组件主要应用于：
+            1.涉及相关组件的Jar包依赖
+            2.自动实现Bean功能
+            3.自动声明并且加载application.properties文件中的属性配置
+        本例子实现一个简单bean的配置
+        实现方式：
+            1.定义一个实类，用于测试
+            2.定义一个属性类
+            3.定义一个自动配置类
+            4.完成后，在resources目录下创建META-INF/spring.factorise文件，使得springboot程序可以扫描到，并配置如下内容：
+                org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+                这里加自动配置类的类路径
+    </description>
+    <dependencies>
+        <!--作为条件注解的依赖包-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+</project>

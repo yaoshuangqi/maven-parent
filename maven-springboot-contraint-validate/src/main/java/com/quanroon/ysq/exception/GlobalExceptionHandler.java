@@ -21,7 +21,7 @@ public class GlobalExceptionHandler extends RuntimeException{
     @ExceptionHandler(Exception.class)
     public String handleException(Exception e) {
         log.error(e.getMessage(), e);
-
+        //实现ConstraintValidator接口的异常基本都会抛出BindException异常
         if (e instanceof BindException) {
             BindException ex = (BindException) e;
             List<ObjectError> allErrors = ex.getAllErrors();
