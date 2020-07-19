@@ -1,6 +1,6 @@
 package com.quanroon.ysq.config;
 
-import com.quanroon.ysq.mq.RocketMqComsumerService;
+import com.quanroon.ysq.mq.RocketMqConsumerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.springframework.context.ApplicationContext;
@@ -16,9 +16,9 @@ import org.springframework.context.annotation.Bean;
 public class RocketMqFactoryBean {
 
     @Bean
-    public RocketMqComsumerService createConsumer(RocketMqProperties configuration,
-        ApplicationContext context) throws Exception {
-        return new RocketMqComsumerService(configuration, context);
+    public RocketMqConsumerService defaultConsumer(RocketMqProperties configuration,
+                                                   ApplicationContext context) throws Exception {
+        return new RocketMqConsumerService(configuration, context);
     }
 
     /**

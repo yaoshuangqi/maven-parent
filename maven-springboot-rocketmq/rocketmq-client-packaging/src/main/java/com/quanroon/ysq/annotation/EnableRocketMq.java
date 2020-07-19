@@ -2,7 +2,7 @@ package com.quanroon.ysq.annotation;
 
 import com.quanroon.ysq.config.RocketMqFactoryBean;
 import com.quanroon.ysq.config.RocketMqProperties;
-import com.quanroon.ysq.mq.RocketMqComsumerService;
+import com.quanroon.ysq.mq.RocketMqConsumerService;
 import com.quanroon.ysq.mq.RocketMqProducerService;
 import org.springframework.context.annotation.Import;
 
@@ -21,7 +21,7 @@ import java.lang.annotation.*;
         RocketMqProperties.class,
         RocketMqFactoryBean.class,
         RocketMqProducerService.class,
-        RocketMqComsumerService.class
+        RocketMqConsumerService.class
 })
 public @interface EnableRocketMq {
 }

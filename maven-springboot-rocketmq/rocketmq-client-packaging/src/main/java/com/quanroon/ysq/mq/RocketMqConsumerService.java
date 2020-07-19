@@ -24,9 +24,9 @@ import java.util.Map;
  * @description mq消费者服务类
  * @createtime 2020/7/19 17:53
  */
-public class RocketMqComsumerService {
+public class RocketMqConsumerService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RocketMqComsumerService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RocketMqConsumerService.class);
 
     public ApplicationContext context;
     private volatile boolean init = false;
@@ -34,7 +34,7 @@ public class RocketMqComsumerService {
     private Map<String, DefaultMQPushConsumer> consumerMap;
 
 
-    public RocketMqComsumerService(RocketMqProperties configuration, ApplicationContext context) {
+    public RocketMqConsumerService(RocketMqProperties configuration, ApplicationContext context) {
         this.context = context;
         this.configuration = configuration;
     }
@@ -44,13 +44,16 @@ public class RocketMqComsumerService {
      * @throws Exception
      */
     public synchronized void start() throws Exception {
-        if (this.init) {
-            LOGGER.warn("请不要重复初始化RocketMQ消费者");
-            return;
+        if(this.configuration.getConsumer().getEnable()){
+            if (this.init) {
+                LOGGER.warn("请不要重复初始化RocketMQ消费者");
+                return;
+            }
+            this.consumerMap = Maps.newConcurrentMap();
+            initializeConsumer(this.consumerMap);
+            init = true;
+            LOGGER.info("mq consumer of start success");
         }
-        this.consumerMap = Maps.newConcurrentMap();
-        initializeConsumer(this.consumerMap);
-        init = true;
     }
 
     /**
