@@ -1,0 +1,12 @@
+applicationName: mq
+server:
+  port: 8011
+
+quanroon:
+  rocketmq:
+    # NameServer地址 用;作为地址的分隔符
+    namesrv-addr: 127.0.0.1:9876
+    producer:
+      # 生产者的组名
+      enable: true
+      groupName: product-test

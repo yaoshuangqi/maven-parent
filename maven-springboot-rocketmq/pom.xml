@@ -14,6 +14,7 @@
     <modules>
         <module>rocketmq-stream-producer01</module>
         <module>rocketmq-stream-consumer01</module>
+        <module>rocketmq-client-packaging</module>
     </modules>
 
     <dependencies>
@@ -21,14 +22,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>com.alibaba.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-stream-binder-rocketmq</artifactId>-->
-        <!--</dependency>-->
+        <!--基于alibaba cloud中集成的rocketMQ-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-rocketmq</artifactId>
         </dependency>
+
     </dependencies>
 
 </project>
