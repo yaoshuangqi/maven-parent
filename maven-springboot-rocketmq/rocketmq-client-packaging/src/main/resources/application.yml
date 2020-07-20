@@ -8,5 +8,9 @@ quanroon:
     namesrv-addr: 127.0.0.1:9876
     producer:
       # 生产者的组名
-      enable: true
       groupName: product-test
+      enable: true
+    consumer:
+      topic: yaoshuangqi-topic
+      groupName: consumer-test
+      enable: true

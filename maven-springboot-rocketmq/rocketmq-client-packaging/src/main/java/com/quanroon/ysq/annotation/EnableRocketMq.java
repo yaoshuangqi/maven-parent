@@ -1,6 +1,5 @@
 package com.quanroon.ysq.annotation;
 
-import com.quanroon.ysq.config.RocketMqFactoryBean;
 import com.quanroon.ysq.config.RocketMqProperties;
 import com.quanroon.ysq.mq.RocketMqConsumerService;
 import com.quanroon.ysq.mq.RocketMqProducerService;
@@ -19,7 +18,6 @@ import java.lang.annotation.*;
 @Documented
 @Import({
         RocketMqProperties.class,
-        RocketMqFactoryBean.class,
         RocketMqProducerService.class,
         RocketMqConsumerService.class
 })

@@ -1,13 +1,12 @@
 package com.quanroon.ysq.mq;
 
+import com.quanroon.ysq.config.RocketMqProperties;
 import com.quanroon.ysq.exception.MqSendException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * @author quanroong.ysq
@@ -18,12 +17,39 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class RocketMqProducerService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RocketMqProducerService.class);
+
+    private DefaultMQProducer rocketProducer = null;
+    private RocketMqProperties configuration;
+    private Boolean isEnable = Boolean.FALSE;
+
+    public RocketMqProducerService(RocketMqProperties configuration) throws Exception{
+        this.configuration = configuration;
+        //是否开启生产者
+        if(configuration.getProducer().getEnable()){
+            if (configuration.getNamesrvAddr() == null) {
+                throw new IllegalArgumentException("quanroon.rocketmq.producer.namesrvAddr 是必须的参数");
+            }
+            rocketProducer = new DefaultMQProducer(configuration.getProducer().getGroupName());
+            rocketProducer.setNamesrvAddr(configuration.getNamesrvAddr());
+            rocketProducer.setInstanceName(System.currentTimeMillis() + "");
+            LOGGER.info("rocketmq producer be created");
+        }
+    }
     /**
-     * 注入mq生产者实例，
+     * 启动生产者
+     * @throws Exception
      */
-    @Autowired
-    @Qualifier("defaultProducer")
-    private DefaultMQProducer rocketProducer;
+    public synchronized void start() throws Exception {
+        if(this.configuration.getProducer().getEnable()){
+            if (this.isEnable) {
+                LOGGER.warn("RocketMQ生产者义启动");
+                return;
+            }
+            rocketProducer.start();
+            isEnable = true;
+            LOGGER.info("======>rocketmq producer of start success");
+        }
+    }
 
     /**
     * 同步发送

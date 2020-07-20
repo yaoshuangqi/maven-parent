@@ -27,7 +27,7 @@ public class MqConcurrentlyMessageListener implements MessageListener {
         try {
             msg = new String(message.getBody(), "UTF-8");
 
-            LOGGER.info("MsgId:{},MQ消费,Topic:{},Tag:{}，Body:{}", message.getMsgId(),
+            LOGGER.info("======>MsgId:{},MQ消费,Topic:{},Tag:{}，Body:{}", message.getMsgId(),
                 message.getTopic(), message.getTags(), msg);
 
         } catch (UnsupportedEncodingException e1){

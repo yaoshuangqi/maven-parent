@@ -52,7 +52,7 @@ public class RocketMqConsumerService {
             this.consumerMap = Maps.newConcurrentMap();
             initializeConsumer(this.consumerMap);
             init = true;
-            LOGGER.info("mq consumer of start success");
+            LOGGER.info("======>rocketmq consumer of start success");
         }
     }
 

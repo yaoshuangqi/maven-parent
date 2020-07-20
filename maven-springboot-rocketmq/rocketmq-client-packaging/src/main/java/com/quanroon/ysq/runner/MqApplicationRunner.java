@@ -1,10 +1,8 @@
 package com.quanroon.ysq.runner;
 
 import com.quanroon.ysq.mq.RocketMqConsumerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.quanroon.ysq.mq.RocketMqProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -19,11 +17,13 @@ import org.springframework.stereotype.Component;
 public class MqApplicationRunner implements ApplicationRunner {
 
     @Autowired
-    @Qualifier("defaultConsumer")
     private RocketMqConsumerService consumerService;
+    @Autowired
+    private RocketMqProducerService producerService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        producerService.start();
         consumerService.start();
     }
 }
