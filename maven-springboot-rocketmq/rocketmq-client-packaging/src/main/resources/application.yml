@@ -5,12 +5,16 @@ server:
 quanroon:
   rocketmq:
     # NameServer地址 用;作为地址的分隔符
-    namesrv-addr: 127.0.0.1:9876
+    namesrv-addr: 192.168.136.128:9876
     producer:
       # 生产者的组名
-      groupName: product-test
       enable: true
+      groupName: product-test
     consumer:
+      enable: false
       topic: yaoshuangqi-topic
       groupName: consumer-test
-      enable: true
+      order:
+        enable: true
+        topic: order-topic
+        group-name: order-consumer-test

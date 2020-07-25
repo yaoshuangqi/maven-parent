@@ -2,14 +2,18 @@ package com.quanroon.ysq.mq;
 
 import com.google.common.collect.Maps;
 import com.quanroon.ysq.annotation.RocketMqListener;
+import com.quanroon.ysq.annotation.RocketMqOrderListener;
 import com.quanroon.ysq.config.RocketMqProperties;
 import com.quanroon.ysq.enums.MqAction;
 import com.quanroon.ysq.listener.MessageListener;
+import com.quanroon.ysq.listener.MessageOrderListener;
 import com.quanroon.ysq.utils.GeneratorId;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
+import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
+import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.slf4j.Logger;
@@ -44,16 +48,14 @@ public class RocketMqConsumerService {
      * @throws Exception
      */
     public synchronized void start() throws Exception {
-        if(this.configuration.getConsumer().getEnable()){
-            if (this.init) {
-                LOGGER.warn("请不要重复初始化RocketMQ消费者");
-                return;
-            }
-            this.consumerMap = Maps.newConcurrentMap();
-            initializeConsumer(this.consumerMap);
-            init = true;
-            LOGGER.info("======>rocketmq consumer of start success");
+        if (this.init) {
+            LOGGER.warn("请不要重复初始化RocketMQ消费者");
+            return;
         }
+        this.consumerMap = Maps.newConcurrentMap();
+        initializeConsumer(this.consumerMap);
+        init = true;
+        LOGGER.info("======>rocketmq consumer of start success");
     }
 
     /**
@@ -67,9 +69,13 @@ public class RocketMqConsumerService {
 
         Map<String, String> consumerGroupMap = Maps.newHashMap();
         //初始化普通消息消费者
-        initializeConcurrentlyConsumer(map, topicMap, consumerGroupMap);
+        if(this.configuration.getConsumer().getEnable()) {
+            initializeConcurrentlyConsumer(map, topicMap, consumerGroupMap);
+        }
         //初始化有序消息消费者
-        //initializeOrderConsumer(map, topicMap, consumerGroupMap);
+        if(this.configuration.getConsumer().getOrder().getEnable()) {
+            initializeOrderConsumer(map, topicMap, consumerGroupMap);
+        }
 
         consumerMap.forEach((key, consumer) -> {
             try {
@@ -94,15 +100,18 @@ public class RocketMqConsumerService {
             throws MQClientException {
         Map<String, Object> beansWithAnnotationMap = context
                 .getBeansWithAnnotation(RocketMqListener.class);
+
+        //配置信息
+        String topic = this.configuration.getConsumer().getTopic();
+        String tag = this.configuration.getConsumer().getTag();
+        String consumerGroup = this.configuration.getConsumer().getGroupName();
+
         for (Map.Entry<String, Object> entry : beansWithAnnotationMap.entrySet()) {
             // 获取到实例对象的class信息
-//            Class<?> classIns = entry.getValue().getClass();
-//            RocketMqListener rocketMqListenerAnnotaion = classIns
-//                    .getDeclaredAnnotation(RocketMqListener.class);
-            String topic = this.configuration.getConsumer().getTopic();
-            String tag = this.configuration.getConsumer().getTag();
-            String consumerGroup = this.configuration.getConsumer().getGroupName();
-            //validate(topicMap, consumerGroupMap, classIns, topic, consumerGroup);
+            Class<?> classIns = entry.getValue().getClass();
+
+            //校验参数配置
+            validate(topicMap, consumerGroupMap, classIns, topic, consumerGroup);
 
             DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(consumerGroup);
             //设置名称服务器地址
@@ -126,13 +135,69 @@ public class RocketMqConsumerService {
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             });
-
-//            topicMap.put(topic, classIns.getSimpleName());
-//            consumerGroupMap.put(consumerGroup, classIns.getSimpleName());
             map.put(String.format("%s-%s", topic, tag), consumer);
         }
     }
 
+    /**
+     * 初始化有序消息消费者
+     */
+    private void initializeOrderConsumer(Map<String, DefaultMQPushConsumer> map,
+                                         Map<String, String> topicMap, Map<String, String> consumerGroupMap)
+            throws MQClientException {
+        Map<String, Object> beansWithAnnotationMap = context
+                .getBeansWithAnnotation(RocketMqOrderListener.class);
+
+        //配置信息
+        String topic = this.configuration.getConsumer().getOrder().getTopic();
+        String tag = this.configuration.getConsumer().getOrder().getTag();
+        String consumerGroup = this.configuration.getConsumer().getOrder().getGroupName();
+
+        for (Map.Entry<String, Object> entry : beansWithAnnotationMap.entrySet()) {
+            // 获取到实例对象的class信息
+            Class<?> classIns = entry.getValue().getClass();
+            //校验参数配置
+            validate(topicMap, consumerGroupMap, classIns, topic, consumerGroup);
+
+            DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(consumerGroup);
+            //设置名称服务器地址
+            consumer.setNamesrvAddr(this.configuration.getNamesrvAddr());
+            consumer.subscribe(topic, tag);
+            //注册消费回调
+            consumer.registerMessageListener((MessageListenerOrderly) (msgList, context) -> {
+
+                try {
+                    for (MessageExt msg : msgList) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("consume msg={}", msg);
+                        }
+                        MessageOrderListener listener = (MessageOrderListener) entry.getValue();
+                        MqAction action = listener.consume(msg, context);
+                        switch (action) {
+                            case ReconsumeLater:
+                                return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
+                            default:
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("消费失败", e);
+                    return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
+                }
+                return ConsumeOrderlyStatus.SUCCESS;
+            });
+
+            map.put(String.format("%s-%s", topic, tag), consumer);
+        }
+    }
+
+    /**
+     * 校验参数配置
+     * @param topicMap
+     * @param consumerGroupMap
+     * @param classIns
+     * @param topic
+     * @param consumerGroup
+     */
     private void validate(Map<String, String> topicMap, Map<String, String> consumerGroupMap,
                           Class<?> classIns, String topic, String consumerGroup) {
         if (StringUtils.isBlank(topic)) {
@@ -153,56 +218,5 @@ public class RocketMqConsumerService {
                             classIns.getSimpleName()));
         }
     }
-
-    /**
-     * 初始化有序消息消费者
-     */
-//    private void initializeOrderConsumer(Map<String, DefaultMQPushConsumer> map,
-//                                         Map<String, String> topicMap, Map<String, String> consumerGroupMap)
-//            throws MQClientException {
-//        Map<String, Object> beansWithAnnotationMap = context
-//                .getBeansWithAnnotation(RocketMqOrderListener.class);
-//
-//        for (Map.Entry<String, Object> entry : beansWithAnnotationMap.entrySet()) {
-//            // 获取到实例对象的class信息
-//            Class<?> classIns = entry.getValue().getClass();
-//            RocketMqOrderListener rocketMqListenerAnnotaion = classIns
-//                    .getDeclaredAnnotation(RocketMqOrderListener.class);
-//            String topic = rocketMqListenerAnnotaion.topic();
-//            String tag = rocketMqListenerAnnotaion.tag();
-//            String consumerGroup = rocketMqListenerAnnotaion.consumerGroup();
-//            validate(topicMap, consumerGroupMap, classIns, topic, consumerGroup);
-//            DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(consumerGroup);
-//            //设置名称服务器地址
-//            consumer.setNamesrvAddr(this.configuration.getNamesrvAddr());
-//            consumer.subscribe(topic, tag);
-//            //注册消费回调
-//            consumer.registerMessageListener((MessageListenerOrderly) (msgList, context) -> {
-//
-//                try {
-//                    for (MessageExt msg : msgList) {
-//                        if (LOGGER.isDebugEnabled()) {
-//                            LOGGER.debug("consume msg={}", msg);
-//                        }
-//                        MessageOrderListener listener = (MessageOrderListener) entry.getValue();
-//                        MqAction action = listener.consume(msg, context);
-//                        switch (action) {
-//                            case ReconsumeLater:
-//                                return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
-//                            default:
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    LOGGER.error("消费失败", e);
-//                    return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
-//                }
-//                return ConsumeOrderlyStatus.SUCCESS;
-//            });
-//
-//            topicMap.put(topic, classIns.getSimpleName());
-//            consumerGroupMap.put(consumerGroup, classIns.getSimpleName());
-//            map.put(String.format("%s-%s", topic, tag), consumer);
-//        }
-//    }
 
 }

@@ -14,12 +14,16 @@ import org.springframework.core.annotation.Order;
 @Data
 public class ConsumerProperties {
 
+    //普通消费者
     private String topic;
     private String tag = "*";
     private String groupName;
 
+    //顺序消费者
+    private ConsumerOrderProperties order = new ConsumerOrderProperties();
+
     /**
-     * 是否开启生产者配置(默认false)
+     * 是否开启普通消费者配置(默认false)
      */
     private Boolean enable = Boolean.FALSE;
 }

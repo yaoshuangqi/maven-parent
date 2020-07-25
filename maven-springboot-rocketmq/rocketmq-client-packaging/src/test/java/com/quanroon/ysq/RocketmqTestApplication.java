@@ -27,8 +27,8 @@ public class RocketmqTestApplication {
     public void testCreateProducer() throws Exception{
         String topic = "yaoshuangqi-topic";
 
-        producerService.synSend(topic,"","生产者"+ UUID.randomUUID().toString());
-        Thread.sleep(1000000);
+        producerService.synSend(topic,"worker_report","生产者"+ UUID.randomUUID().toString());
+        Thread.sleep(10000);
     }
 
 

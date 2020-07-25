@@ -27,7 +27,7 @@ public class MqOrderMessageRestListener implements MessageOrderListener {
         try {
             msg = new String(message.getBody(), "UTF-8");
             //处理消息业务逻辑
-            LOGGER.info("MsgId:{},MQ消费,Topic:{},Tag:{}，Body:{}", message.getMsgId(),
+            LOGGER.info("顺序消费：MsgId:{},MQ消费,Topic:{},Tag:{}，Body:{}", message.getMsgId(),
                     message.getTopic(), message.getTags(), msg);
         } catch (UnsupportedEncodingException e){
             e.printStackTrace();
