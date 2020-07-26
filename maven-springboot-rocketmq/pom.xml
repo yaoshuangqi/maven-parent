@@ -15,6 +15,7 @@
         <module>rocketmq-stream-producer01</module>
         <module>rocketmq-stream-consumer01</module>
         <module>rocketmq-client-packaging</module>
+        <module>rocketmq-client-general</module>
     </modules>
 
     <dependencies>

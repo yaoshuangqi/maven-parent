@@ -11,10 +11,10 @@ quanroon:
       enable: true
       groupName: product-test
     consumer:
-      enable: false
+      enable: true
       topic: yaoshuangqi-topic
       groupName: consumer-test
       order:
-        enable: true
-        topic: order-topic
+        enable: false
+        topic: yaoshuangqi-topic
         group-name: order-consumer-test
