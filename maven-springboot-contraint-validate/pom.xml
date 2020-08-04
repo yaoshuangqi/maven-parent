@@ -30,5 +30,11 @@
             <version>26.0-jre</version>
             <scope>compile</scope>
         </dependency>
+
+        <!--spring boot 中的aop-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
     </dependencies>
 </project>

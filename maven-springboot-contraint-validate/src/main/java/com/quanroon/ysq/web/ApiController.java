@@ -24,4 +24,31 @@ public class ApiController {
         System.out.println(user.toString());
         return "success";
     }
+
+    @RequestMapping(value = "getUser", method = RequestMethod.GET)
+    public String getUser(){
+        System.out.println("getUser==========>");
+        return "success";
+    }
+
+    /**
+     * 测试aop
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = "updateUser", method = RequestMethod.GET)
+    public String updateUser(User user){
+        user.setAge(55);
+        user.setSex("0");
+        System.out.println("getUser==========>"+user.toString());
+        //int i = 1/0;
+        add(555L);
+        return "success";
+    }
+
+    private String add(Long userId){
+        System.out.println("=======>"+userId);
+        return "dddfdf";
+    }
+
 }
