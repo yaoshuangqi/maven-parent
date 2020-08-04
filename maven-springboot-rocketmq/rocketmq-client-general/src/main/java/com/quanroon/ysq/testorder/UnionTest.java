@@ -14,7 +14,6 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 /**
  * @author quanroong.ysq
@@ -34,6 +33,8 @@ public class UnionTest {
         String nameAddr = "127.0.0.1:9876";
         DefaultMQProducer producer = new DefaultMQProducer("order-producer");
         producer.setNamesrvAddr(nameAddr);
+        //是否开启故障延迟机制（默认false）
+        producer.setSendLatencyFaultEnable(true);
 
         producer.start();
 
@@ -43,11 +44,30 @@ public class UnionTest {
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
         consumer.subscribe(topic, "*");
 
+
         //注册监听
         consumer.registerMessageListener((MessageListenerOrderly) (msgList, context) ->{
 
             for (MessageExt msg : msgList){
-                System.out.println("进行消费：content : "+ new String(msg.getBody()));
+
+                try {
+                    Thread.sleep(2000);
+                    //测试消息消费重试，当消息为退款，直接发生异常
+                    if("TK".equals(msg.getTags())){
+                        //退款消费发生异常
+                        //int i = 1/0;
+                    }
+
+                    System.out.println("进行消费：content : "+ new String(msg.getBody()));
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                    System.out.println("退款消费发生异常,重试次数："+msg.getReconsumeTimes());
+                    if(msg.getReconsumeTimes() == 5){
+                        //当重试消费次数达到5次后，不再进行重试消费，可以将消息持久化存储到DB或LOG日志中
+                        return ConsumeOrderlyStatus.SUCCESS;
+                    }
+                    return null;
+                }
             }
             return ConsumeOrderlyStatus.SUCCESS;
         });
@@ -62,27 +82,33 @@ public class UnionTest {
     }
 
     public static void sendMsg(DefaultMQProducer producer, String topic) throws InterruptedException, RemotingException, MQClientException, MQBrokerException {
-        List<String> typeList = Arrays.asList("创建","支付","退款","完成");//假设这里有三条消息需要进行生产，并按照此顺序来
+        List<String> typeList = Arrays.asList("创建","支付","退款","完成========");//假设这里有三条消息需要进行生产，并按照此顺序来
         String orderId = "NF3453889341";//假设这是订单ID
-        for (String type : typeList){
-            String body = type +"  "+System.currentTimeMillis();
+        for(int i = 0; i < 100; i++){
 
-            Message msg = new Message(topic, body.getBytes());
+            for (String type : typeList){
+                String body = type +"  "+System.currentTimeMillis();
 
-            //顺序消息发送
-            SendResult sendResult = producer.send(msg,(mqs, msg1, arg)->{
-                int index = arg.hashCode();
-                if(index < 0)
-                    index = Math.abs(index);
-                //指定topic下的队列下标
-                index = index % mqs.size();
-                return mqs.get(index);
-            },orderId);
-            //同步发送
-            //SendResult sendResult = producer.send(msg);
+                Message msg = new Message(topic, body.getBytes());
 
-            System.out.println("发送消息："+sendResult + " , body : " + body);
-            Thread.sleep(1000);
+                if("退款".equals(type)){
+                    msg.setTags("TK");
+                }
+                //顺序消息发送
+                SendResult sendResult = producer.send(msg,(mqs, msg1, arg)->{
+                    int index = arg.hashCode();
+                    if(index < 0)
+                        index = Math.abs(index);
+                    //指定topic下的队列下标
+                    index = index % mqs.size();
+                    return mqs.get(index);
+                },orderId);
+                //同步发送
+                //SendResult sendResult = producer.send(msg);
+
+                System.out.println("发送消息："+sendResult + " , body : " + body);
+                Thread.sleep(1000);
+            }
         }
     }
 }
