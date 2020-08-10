@@ -1,5 +1,6 @@
 package com.quanroon.ysq.bean;
 
+import com.quanroon.ysq.bean.annoation.StudentServiceImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -20,5 +21,9 @@ public class MainTest {
         teacher.getChildUserByFactory().showMe();
 
         //teacher.showMe();
+        //通过注解模式拿到
+        StudentServiceImpl studentServiceImpl = (StudentServiceImpl)context.getBean("studentServiceImpl");
+
+        studentServiceImpl.test();
     }
 }
