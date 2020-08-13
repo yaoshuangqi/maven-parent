@@ -22,8 +22,10 @@
 <script type="text/javascript">
     var button=document.getElementById("start");
     button.onclick=function(){
-
-
+        if(!("WebSocket" in window)){
+            alert("您的浏览器不支持WebSocket");
+            return;
+        }
 
 
         var name=document.getElementById("yourName");

@@ -16,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @createtime 2020/8/10 21:56
  */
 @ServerEndpoint(value = "/ws/chat/{nickName}")
+@Component
 public class ChatService {
     private static final Set<ChatService> connections = new CopyOnWriteArraySet<ChatService>();
     private String nickName; //接收用户名称
