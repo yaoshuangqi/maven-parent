@@ -1,6 +1,8 @@
-package com.quanroon.ysq.service;
+package com.quanroon.ysq.handle;
 
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Priority;
 
 /**
  * @author quanroong.ysq
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
  * @createtime 2020/8/13 22:57
  */
 @Component("dust")
+@Priority(1)
 public class DustWebSocket implements IWebSocketHandleStrategy {
 
     /**

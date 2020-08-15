@@ -11,7 +11,7 @@
 
     <artifactId>maven-springboot-websocket</artifactId>
 
-
+    <!--Spring boot 中已经集成了websocket-->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

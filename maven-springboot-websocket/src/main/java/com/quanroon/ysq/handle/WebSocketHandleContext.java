@@ -1,32 +1,43 @@
 package com.quanroon.ysq.handle;
 
-import com.quanroon.ysq.service.IWebSocketHandleStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author quanroong.ysq
  * @version 1.0.0
- * @description
+ * @description 本类测试@Qualifier,@Primary,@Priority @Resource 依次按照先后顺序注入
+ * 同时也测试注入list,map的属性
  * @createtime 2020/8/13 22:55
  */
 @Component
-public class WebSocketHandleContext {
+public class WebSocketHandleContext implements ApplicationRunner {
 
     //Map存储所有的策略类，key为 @Component("xxx") 名称
-    //@Autowired
-    private final Map<String, IWebSocketHandleStrategy> strategyMap = new ConcurrentHashMap<>();
+    //@Qualifier,@Primary,@Priority @Resource 依次按照先后顺序注入
+    @Autowired
+    private Map<String, IWebSocketHandleStrategy> strategyMap;// = new ConcurrentHashMap<>();
 
-    public WebSocketHandleContext(Map<String, IWebSocketHandleStrategy> strategyMap) {
-        this.strategyMap.clear();
-        strategyMap.forEach((k, v) -> this.strategyMap.put(k, v));
+    public WebSocketHandleContext() {
+//        this.strategyMap.clear();
+//        strategyMap.forEach((k, v) -> this.strategyMap.put(k, v));
 
         //根据spring注入此类时，调用此构造函数，因构造函数依赖其接口，会自动其实例化依赖对象，并完成注入
-        IWebSocketHandleStrategy strategy =  strategyMap.get("dust");
-        strategy.findDustList();
+//        IWebSocketHandleStrategy strategy =  strategyMap.get("dust");
+//        strategy.findDustList();
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        //根据spring注入此类时，调用此构造函数，因构造函数依赖其接口，会自动其实例化依赖对象，并完成注入
+        strategyMap.forEach((k, v) ->{
+            System.out.println("======> " + k);
+            v.findDustList();
+        });
     }
 
     /**

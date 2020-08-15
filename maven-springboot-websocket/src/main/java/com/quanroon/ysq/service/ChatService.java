@@ -66,7 +66,7 @@ public class ChatService {
         System.out.println(throwable.getMessage());
     }
     /*
-     * 广播消息
+     * 广播消息,相当于连接到此服务的客户端都可以接收到消息
      */
     private static void broadCast(String message){
         for(ChatService chat:connections){

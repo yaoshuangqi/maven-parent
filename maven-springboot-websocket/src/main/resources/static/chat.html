@@ -29,7 +29,7 @@
 
 
         var name=document.getElementById("yourName");
-        console.log(name.value);
+        alert(name.value);
         var websocketAdd="ws://localhost:8081/ws/chat/"+name.value;
         var webSocket=new WebSocket(websocketAdd);
 
@@ -55,6 +55,7 @@
                 //上边一部完成之后，会自动触发onmessage事件
             }
 
+            //this.heartCheck.reset().start() // 心跳
         }
 
 
@@ -64,10 +65,16 @@
 
         function onError(event) {
             alert("错误提示："+event.data);
+            reconnect();
         }
 
+        webSocket.onclose = function (ev) {
+            alert("onclose了");
+            reconnect();
+        };
+
         webSocket.onerror = function(event) {
-            onError(event)
+            onError(event);
         };
 
         webSocket.onopen = function(event) {
@@ -78,7 +85,133 @@
             onMessage(event)
         };
 
+
+        //断开重连
+        var lockReconnect = false;
+        function reconnect() {
+            if (lockReconnect) return;
+            lockReconnect = true;
+            //没连接上会一直重连，设置延迟避免请求过多
+            alert("触发了重连,一分钟后，自动重连，如果连接不上，则断开了");
+            setTimeout(function() {
+                button.click();
+                lockReconnect = false;
+            }, 60000);
+        }
+    };
+
+
+
+    //心跳检测
+    var heartCheck = {
+        timeout: 60000, //60秒
+        timeoutObj: null,
+        serverTimeoutObj: null,
+        reset: function() {
+            clearTimeout(this.timeoutObj);
+            clearTimeout(this.serverTimeoutObj);
+            return this;
+        },
+        start: function() {
+            var self = this;
+            this.timeoutObj = setTimeout(function() {
+                //这里发送一个心跳，后端收到后，返回一个心跳消息，
+                //onmessage拿到返回的心跳就说明连接正常
+                self.send("心跳测试");
+                self.serverTimeoutObj = setTimeout(function() { //如果超过一定时间还没重置，说明后端主动断开了
+                    self.close(); //如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次
+                }, self.timeout);
+            }, this.timeout)
+        }
+    };
+
+
+
+
+    //另一种写法，带回调
+
+    //调用方式：
+    //  识别车辆统计趋势
+    /*function sevenData(){
+        webcocketHttp("vehicle", "sevenVehicleList-"+projId, function (message) {
+            var data = JSON.parse(message.data);
+            sevenDate = data.info;
+            sevenDateX = data.date;
+            lineData(sevenDateX,sevenDate);
+        })
+    }*/
+
+    /*var ws; //websocket的实例
+    var lockReconnect = false; //避免重复连接
+    // connector接口后缀  callbackOnmessage接口返回data   callbackOnopen 发送给后台  callbackOnclose关掉
+    var webcocketHttp = function(module,connector,callbackOnmessage,callbackOnopen){
+        var host  =  window.location.host;
+        var url   =  "ws://"+host+"/websocket/"+module+"/"+connector;
+        ws   =  new WebSocket(url);
+        if("WebSocket" in window){
+            ws.onmessage = function(evt){
+                if(typeof callbackOnmessage == "function"){
+                    callbackOnmessage(evt,ws);
+                    // 弱网、断连所导致重连都是被动的，而在一般的websocket连接中都是存在心跳机制的，客户端和服务端约定一个特定的心跳消息用于检测链路是否通信正常。
+                    // 我们通过心跳机制，在客户端来检测链路的正常，在约定时间间隔内收不到心跳或者其他任何通信消息时，客户端进行主动重连。
+                    heartCheck.reset().start();
+                }
+            };
+            ws.onopen  = function(evt){
+                if(typeof callbackOnopen == "function"){
+                    callbackOnopen(evt,ws);
+                    heartCheck.reset().start();
+                }
+            };
+            ws.onclose  = function(evt){
+                reconnect(module,connector,callbackOnmessage,callbackOnopen);//重连
+                // if(typeof callbackOnclose == "function") callbackOnclose(evt,ws);
+            };
+            ws.onerror = function (err) {
+                reconnect(module,connector,callbackOnmessage,callbackOnopen);//重连
+            };
+        }else{
+            alert("您的浏览器不支持WebSocket，请使用谷歌浏览器!");
+        }
+
+    };
+    //断开重连
+    function reconnect(module,connector,callbackOnmessage,callbackOnopen) {
+        if (lockReconnect) return;
+        lockReconnect = true;
+        //没连接上会一直重连，设置延迟避免请求过多
+        setTimeout(function() {
+            console.log("触发了重连");
+            webcocketHttp(module,connector,callbackOnmessage,callbackOnopen);
+            lockReconnect = false;
+        }, 2000);
     }
+
+    //心跳检测
+    var heartCheck = {
+        timeout: 60000, //60秒
+        timeoutObj: null,
+        serverTimeoutObj: null,
+        reset: function() {
+            clearTimeout(this.timeoutObj);
+            clearTimeout(this.serverTimeoutObj);
+            return this;
+        },
+        start: function() {
+            var self = this;
+            this.timeoutObj = setTimeout(function() {
+                //这里发送一个心跳，后端收到后，返回一个心跳消息，
+                //onmessage拿到返回的心跳就说明连接正常
+                // socket.send("心跳测试");
+                self.serverTimeoutObj = setTimeout(function() { //如果超过一定时间还没重置，说明后端主动断开了
+                    ws.close(); //如果onclose会执行reconnect，我们执行ws.close()就行了.如果直接执行reconnect 会触发onclose导致重连两次
+                }, self.timeout)
+            }, this.timeout)
+        }
+    };*/
+
+
+
 
 </script>
 </body>
