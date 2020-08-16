@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>maven-springboot-starter</artifactId>
+    <packaging>pom</packaging>
     <description>
         自定义starter组件，组件主要应用于：
             1.涉及相关组件的Jar包依赖
@@ -23,7 +24,12 @@
             4.完成后，在resources目录下创建META-INF/spring.factorise文件，使得springboot程序可以扫描到，并配置如下内容：
                 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
                 这里加自动配置类的类路径
+            5.本模块中也实现了自定义的redis,自动连接：redis-spring-boot-starter组件
     </description>
+    <modules>
+        <module>auto-import-selector</module>
+        <module>redis-spring-boot-starter</module>
+    </modules>
     <dependencies>
         <!--作为条件注解的依赖包-->
         <dependency>
