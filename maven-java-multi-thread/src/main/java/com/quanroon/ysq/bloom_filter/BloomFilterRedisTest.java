@@ -2,6 +2,8 @@ package com.quanroon.ysq.bloom_filter;
 
 import com.google.common.hash.Funnels;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -16,10 +18,17 @@ import java.util.List;
  * @date 2020/8/20 15:49
  */
 @Slf4j
+@Component
 public class BloomFilterRedisTest {
 
-    public static void main(String[] args) {
-        RedisBloomFilter redisBloomFilter = new RedisBloomFilter();
+
+    static RedisBloomFilter redisBloomFilter;
+    @Autowired
+    public void setRedisBloomFilter(RedisBloomFilter redisBloomFilter){
+        this.redisBloomFilter = redisBloomFilter;
+    }
+
+    public static void redisFilterTest() {
         int expectedInsertions = 1000;
         double fpp = 0.1;
         redisBloomFilter.delete("bloom");

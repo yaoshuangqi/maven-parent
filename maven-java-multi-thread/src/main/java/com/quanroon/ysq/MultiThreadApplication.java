@@ -1,5 +1,6 @@
 package com.quanroon.ysq;
 
+import com.quanroon.ysq.bloom_filter.BloomFilterRedisTest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -14,5 +15,7 @@ public class MultiThreadApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MultiThreadApplication.class, args);
+        BloomFilterRedisTest.redisFilterTest();
     }
+
 }

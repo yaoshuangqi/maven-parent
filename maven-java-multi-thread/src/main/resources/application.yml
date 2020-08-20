@@ -1,2 +1,7 @@
 server:
   port: 8079
+spring:
+  redis:
+    host: 172.21.1.78
+    password: mymaster
+    port: 6379
