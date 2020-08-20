@@ -1,4 +1,4 @@
-package com.quanroon.ysq;
+package com.quanroon.ysq.thread_lock;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

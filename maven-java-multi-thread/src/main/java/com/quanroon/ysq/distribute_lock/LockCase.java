@@ -16,12 +16,14 @@ public class LockCase extends RedisLock {
 
 	@SuppressWarnings("unused")
 	public void lock() {
+		//通过自旋，进行续命
 		while (true) {
 			String result = jedis.set(lockKey, lockValue, LockConstant.NOT_EXIST, LockConstant.SECONDS, 10);
 			if (result.equals("OK")) {
 				System.out.println("线程id:" + Thread.currentThread().getId() + "加锁成功!时间:" + LocalTime.now());
 				// 开启定时刷新过期时间
 				isOpenExpirationRenewal = true;
+				//通过异步，解决锁失效，而业务还未完成的问题
 				scheduleExpirationRenewal();
 				break;
 			}

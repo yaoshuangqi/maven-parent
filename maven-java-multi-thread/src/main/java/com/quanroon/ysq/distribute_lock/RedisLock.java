@@ -25,6 +25,7 @@ public abstract class RedisLock implements Lock {
 	private class ExpirationRenewal implements Runnable {
 
 		public void run() {
+			//异步解决锁过期，而业务还未处理完成的问题
 			while(isOpenExpirationRenewal){
 				System.out.println("执行延迟失效时间中...");
 				

@@ -1,4 +1,4 @@
-package com.quanroon.ysq;
+package com.quanroon.ysq.thread_lock;
 
 import java.util.ArrayList;
 import java.util.Iterator;
