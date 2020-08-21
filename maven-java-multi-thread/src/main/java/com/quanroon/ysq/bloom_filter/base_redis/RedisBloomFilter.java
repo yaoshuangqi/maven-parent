@@ -1,4 +1,4 @@
-package com.quanroon.ysq.bloom_filter;
+package com.quanroon.ysq.bloom_filter.base_redis;
 
 /**
  * @author quanroon.ysq
