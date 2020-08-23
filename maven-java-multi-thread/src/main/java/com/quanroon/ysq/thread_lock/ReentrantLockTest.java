@@ -9,6 +9,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * @version 1.0.0
  * @description ReentrantLock可重入锁，可以完成synchronized的所有功能，并提供可中断，公平锁等功能
  * synchronized是由JVM自动获取锁和释放锁的机制
+ *
+ * Lock的实现原理：它是一个有同步器+双向队列来实现的，并提供线程安全同步。AbstractQueuedSynchronizer
+ * 通过管理一个双向同步队列（FIFO）实现同步状态的管理，实现多线程对同步状态的访问安全
+ *
  * @createtime 2020/8/15 13:18
  */
 public class ReentrantLockTest {
@@ -16,7 +20,7 @@ public class ReentrantLockTest {
     static transient ReentrantLock lock = new ReentrantLock();//默认非公平锁
     //transient ReentrantLock lock = new ReentrantLock(true);//公平锁
     //创建条件对象，并绑定到该锁，线程只有获取到该锁后，才能调用该组件的 await()方法，而调用后，当前线程将释放锁
-    //这个Condition 就是类似之前使用Object 类锁一样的。
+    //这个Condition 就是类似之前使用Object 类锁一样的。 配合Lock实现等待通知模式
     static private Condition condition = lock.newCondition();//创建 Condition
 
     public static void testCondition(){
