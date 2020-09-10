@@ -19,7 +19,7 @@ public class BlogServiceImpl2 implements BlogService2 {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //@Transactional(propagation = Propagation.MANDATORY)
     public void delete(int id) {
         String sql = "delete from user_test1 where user_id=?";
         int update = jdbcTemplate.update(sql, id);
