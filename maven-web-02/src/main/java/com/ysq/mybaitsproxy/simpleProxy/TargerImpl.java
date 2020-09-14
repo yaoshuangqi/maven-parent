@@ -11,4 +11,10 @@ public class TargerImpl implements Target {
     public void work() {
         System.out.println("===> 完犊子了，这是目标类的实现");
     }
+
+    //这个方法，我不需要代理
+    @Override
+    public void init() {
+        System.out.println("===> init params ,not be proxy");
+    }
 }

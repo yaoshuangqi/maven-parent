@@ -12,10 +12,17 @@ public class DefaultInterceptorImpl implements Interceptor {
 
 
     @Override
+    public Object register(Object target) {
+        return TargetProxyTwo.getProxyObject(target,this);
+    }
+
+    @Override
     public Object intercept(Invocation invocation) throws InvocationTargetException, IllegalAccessException {
-        if(invocation.getMethod().equals("work")){
+        //判断是否是指定的方法名
+        System.out.println("====>我是代理模式衍生出来的一个拦截器，用于执行一些特定的方法");
+        if(invocation.getMethod().getName().equals("work")){
             return invocation.proceed();
         }
-        return null;
+        return invocation.proceed();
     }
 }

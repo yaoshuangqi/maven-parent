@@ -9,4 +9,6 @@ package com.ysq.mybaitsproxy.simpleProxy;
 public interface Target {
 
     void work();
+
+    void init();
 }

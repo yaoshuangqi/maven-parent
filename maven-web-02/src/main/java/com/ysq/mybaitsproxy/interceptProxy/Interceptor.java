@@ -12,5 +12,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public interface Interceptor {
 
+    Object register(Object target);
+
     public Object intercept(Invocation invocation) throws InvocationTargetException, IllegalAccessException;
 }

@@ -25,6 +25,7 @@ public class Invocation {
         this.args = args;
     }
 
+    //判代理类的执行方法
     public Object proceed() throws InvocationTargetException, IllegalAccessException {
         return method.invoke(target,args);
     }
