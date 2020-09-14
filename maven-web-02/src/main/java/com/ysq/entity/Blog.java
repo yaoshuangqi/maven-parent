@@ -1,5 +1,6 @@
 package com.ysq.entity;
 
+import com.ysq.entity.page.Page;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * @createtime 2020/9/8 23:16
  */
 @Data
-public class Blog {
+public class Blog extends Page {
 
     private int user_id;
     private String user_name;

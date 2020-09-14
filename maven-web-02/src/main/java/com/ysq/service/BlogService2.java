@@ -1,5 +1,9 @@
 package com.ysq.service;
 
+import com.ysq.entity.Blog;
+
+import java.util.List;
+
 /**
  * @author quanroong.ysq
  * @version 1.0.0
@@ -8,4 +12,6 @@ package com.ysq.service;
  */
 public interface BlogService2 {
     void delete(int id);
+
+    List<Blog> getBlogList(Blog blog);
 }

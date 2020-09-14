@@ -1,11 +1,14 @@
 package com.ysq.service.impl;
 
+import com.ysq.entity.Blog;
 import com.ysq.service.BlogService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author quanroong.ysq
@@ -26,5 +29,10 @@ public class BlogServiceImpl2 implements BlogService2 {
         System.out.println("===> 你删除了了id="+id+"，看看="+update);
 
         //int i =1/0;
+    }
+
+    @Override
+    public List<Blog> getBlogList(Blog blog) {
+        return null;
     }
 }
