@@ -16,6 +16,9 @@ public class EmailEvent extends ApplicationEvent {
     this.address = address;
     this.text = text;
     }
+    public EmailEvent(Object source){
+        super(source);
+    }
 
     public String getAddress() {
         return address;
