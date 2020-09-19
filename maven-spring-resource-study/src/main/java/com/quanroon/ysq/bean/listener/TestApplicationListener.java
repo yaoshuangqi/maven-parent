@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 /**
  * @author quanroon.ysq
  * @version 1.0.0
- * @content
+ * @content 这个事件contextRefreshedEvent，是当bean全部转载完成后，触发的事件。
+ * 事件可以自定义，监听也可以自定义
  * @date 2020/8/20 17:22
  */
 @Component
