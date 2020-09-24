@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!--修改成自己本地的路径-->
+    <classPathEntry
+            location="D:\maven2_lib\mysql\mysql-connector-java\5.1.30\mysql-connector-java-5.1.30.jar" />
+    <context id="MysqlTables" targetRuntime="MyBatis3" defaultModelType="flat">
+
+        <property name="javaFileEncoding" value="UTF-8"/>
+        <!-- 分页相关 -->
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin" />
+        <!-- 带上序列化接口 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+        <!-- 自定义的注释生成插件-->
+        <plugin type="com.chrm.mybatis.generator.plugins.CommentPlugin">
+            <!-- 抑制警告 -->
+            <property name="suppressTypeWarnings" value="true" />
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true" />
+            <!-- 是否生成注释代时间戳-->
+            <property name="suppressDate" value="true" />
+        </plugin>
+        <!-- 整合lombok-->
+        <plugin type="com.chrm.mybatis.generator.plugins.LombokPlugin" >
+            <property name="hasLombok" value="true"/>
+        </plugin>
+
+        <!--数据库配置-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://172.21.1.55:3306/zgz_saas_v3?useUnicode=true&amp;characterEncoding=UTF-8"
+                        userId="root" password="root">
+        </jdbcConnection>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!-- 实体生成目录配置 -->
+        <javaModelGenerator targetPackage="com.quanroon.atten.reports.entity"
+                            targetProject="src/main/java">
+            <property name="enableSubPackages" value="false" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <!-- mapper.xml接口生成目录配置 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <!-- mapper接口生成目录配置 -->
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="com.quanroon.atten.reports.dao" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <!--表格实体配置-->
+        <table tableName="vihecle_report_recond" domainObjectName="VihecleReportRecond">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true" />
+        </table>
+        <table tableName="vihecle_basic_set" domainObjectName="VihecleBaicSet">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true" />
+        </table>
+        <table tableName="vihecle_report_log" domainObjectName="VihecleReportLog">
+            <generatedKey column="id" sqlStatement="JDBC" identity="true" />
+        </table>
+    </context>
+</generatorConfiguration>
