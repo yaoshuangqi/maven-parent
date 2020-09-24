@@ -10,7 +10,7 @@
     <!--管理子模块-->
     <modules>
         <module>maven-java-01</module>
-        <module>maven-web-01</module>
+        <module>maven-web-generator</module>
         <module>maven-web-02</module>
         <module>maven-springboot-swagger2</module>
         <module>maven-spring-resource-study</module>
