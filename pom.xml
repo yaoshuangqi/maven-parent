@@ -19,6 +19,7 @@
         <module>maven-springboot-contraint-validate</module>
         <module>maven-springboot-websocket</module>
         <module>maven-java-multi-thread</module>
+        <module>maven-springboot-shiro</module>
     </modules>
 
     <!--多模块管理方式，父工程的packaing只能是pom-->

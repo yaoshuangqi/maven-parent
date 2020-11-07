@@ -32,3 +32,11 @@ logging:
     com: INFO
     #打印出比较详细的事务过程
     org.springframework.jdbc: DEBUG
+
+#云通讯
+ytx:
+  server: app.cloopen.com
+  port: 8883
+  accountsid: aaf98f8951eb7f810151f2b16b0a1388
+  accounttoken: 751d92e39a4b4d4c841025f7d574569b
+  appid: 8aaf070867e8660f0167f968d1500a83
