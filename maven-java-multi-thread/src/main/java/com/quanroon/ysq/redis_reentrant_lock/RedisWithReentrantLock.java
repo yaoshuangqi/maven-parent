@@ -27,7 +27,7 @@ public class RedisWithReentrantLock {
 		* @nxxx: 值只能是nx和xx,如果nx，则只有当key不存在时才能set,反之，则有当key存在时候才能set
 		* @expx: 值只能取EX或者PX，代表数据过期时间的单位，EX代表秒，PX代表毫秒
 		*/
-		return jedis.set(key, "", "nx", "ex", 5L) != null;
+		return jedis.set(key, "", "nx", "ex", 30L) != null;
 	}
 
 	private void _nulock(String key) {
@@ -81,8 +81,8 @@ public class RedisWithReentrantLock {
 	}
 
 	public static void main(String[] args) {
-		Jedis jedis = new Jedis("172.21.1.78");
-		jedis.auth("mymaster");
+		Jedis jedis = new Jedis("172.21.1.205",6380);
+		//jedis.auth("mymaster");
 		RedisWithReentrantLock reentrantLock = new RedisWithReentrantLock(jedis);
 		// 这个hai_1，表示同一个线程去拿锁，这个锁就使用redis中的一个特性nx xx来判断的，也就是说可以做分布式锁
 		// 就比如其他线程来拿锁的时候，肯定拿不到这个hai_1的锁。

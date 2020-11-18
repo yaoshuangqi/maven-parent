@@ -2,6 +2,14 @@ server:
   port: 8079
 spring:
   redis:
-    host: 172.21.1.78
-    password: mymaster
-    port: 6379
+    host: 172.21.1.205
+    password:
+    port: 6380
+    database: 0
+    timeout: 6000  # 连接超时时长（毫秒）
+    jedis:
+      pool:
+        max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1ms    # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 10      # 连接池中的最大空闲连接
+        min-idle: 5       # 连接池中的最小空闲连接

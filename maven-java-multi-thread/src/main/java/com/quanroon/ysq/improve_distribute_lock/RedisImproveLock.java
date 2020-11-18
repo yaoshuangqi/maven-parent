@@ -1,6 +1,9 @@
 package com.quanroon.ysq.improve_distribute_lock;
 
+import com.quanroon.ysq.config.SpringContextHolder;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.Arrays;
@@ -13,31 +16,33 @@ import java.util.concurrent.locks.Lock;
  * @author quanroong.ysq
  * @version 1.0.0
  * @description redis终极版的分布式锁，考虑到了很多问题，包括订阅发布，心跳检测机制，多线程，并发
+ * 然而，这只是单节点的redis服务器，并不适应于多多集群环境下，再多集群环境下，可以使用redLock redisson
+ * 此锁不具备可重复入※，如果需要增加，可使用计数器。
  * @createtim2020/11/16 23:07
  */
+@Component
 public class RedisImproveLock implements Lock {
 
-    private static String KEY ="dddd";
-    private static String CHANNEL_NAME = "发布订阅名称";
-    private static ThreadLocal<String> local = new ThreadLocal<>();
+    private static String KEY ="prefix_lock";
+    private static String CHANNEL_NAME = "pubSubName";
 
+    private static ThreadLocal<String> local = new ThreadLocal<>();
     //定时任务的执行器
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
     //存放每次加锁所创建的所有定时任务
     private static ConcurrentHashMap<String, Future> futures = new ConcurrentHashMap<>();
 
+    private JedisPool jedisPool = SpringContextHolder.getBean("jedisPool");
+
     @Override
     public void lock() {
-
+        Jedis jedis = jedisPool.getResource();
         while (true){
             if(tryLock())
                 return;
-
             //创建消息订阅者
             CountDownLatch cd1 = new CountDownLatch(1);//线程之间的协助机制类，类似一个红绿灯
             Subscriber subscriber = new Subscriber(cd1);
-
-            Jedis jedis = null;
 
             //jedis中的sub操作时阻塞的，为此，另起个线程来订阅
             new Thread(new Runnable() {
@@ -52,7 +57,6 @@ public class RedisImproveLock implements Lock {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             cd1 = null;
             subscriber.unsubscribe();
         }
@@ -72,13 +76,17 @@ public class RedisImproveLock implements Lock {
             local.set(uuid);
         }
         //获取redis的原始连接
-        //....
-        //。。使用setnx设置请求值，并设置失效时间
-        String ret = "";
-        //返回”ok“则加锁成功
-        if("OK".equals(ret)){
-            setHeatbeat(uuid);//加锁成功则启动心跳检测，进行续命操作
-            return true;
+        Jedis jedis = jedisPool.getResource();
+        try {
+            //使用setnx设置请求值，并设置失效时间
+            String ret = jedis.set(KEY, uuid, "NX", "EX", 30);
+            //返回”ok“则加锁成功
+            if("OK".equals(ret)){
+                setHeatbeat(uuid);//加锁成功则启动心跳检测，进行续命操作
+                return true;
+            }
+        } finally {
+            jedis.close();
         }
         //否则，加锁失败
         return false;
@@ -91,10 +99,11 @@ public class RedisImproveLock implements Lock {
 
     @Override
     public void unlock() {
-        //读取lua脚本
-        String script = "";
+        //读取lua脚本 redis2.6后特性
+        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
         //
-        Jedis jedis = null;
+        Jedis jedis = jedisPool.getResource();
+        //操作lua脚本
         jedis.eval(script, Arrays.asList(KEY), Arrays.asList(local.get()));
         //解锁时，要将对应的心跳检测停止
         Future future = futures.get(local.get());
@@ -122,8 +131,7 @@ public class RedisImproveLock implements Lock {
             @Override
             public void run() {
                 //获取redis连接对象
-                //...
-                Jedis jedis = null;
+                Jedis jedis = jedisPool.getResource();
                 if(jedis.get(KEY).equals(uuid)){
                     jedis.expire(uuid,30 );
                 }else {
