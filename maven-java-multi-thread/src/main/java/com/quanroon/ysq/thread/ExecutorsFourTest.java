@@ -2,6 +2,7 @@ package com.quanroon.ysq.thread;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @author quanroong.ysq
@@ -23,8 +24,10 @@ public class ExecutorsFourTest {
         ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
 
         //newFixedThreadPool 创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
 
         //newScheduledThreadPool 创建一个定长线程池，支持定时及周期性任务执行。
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
 
         for (int i = 0 ; i < 10 ; i++){
             final int index = i;
