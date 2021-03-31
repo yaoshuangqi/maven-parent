@@ -25,13 +25,10 @@ public class MessageProducer {
     public void sendDelay(String message, Integer delay){
         Map<String, String> map = new HashMap();
         map.put("msg", message);
-        rabbitTemplate.convertAndSend("delayQueue", map, new MessagePostProcessor() {
-            @Override
-            public Message postProcessMessage(Message message) throws AmqpException {
-                //设置过期时间，单位毫秒
-                message.getMessageProperties().setExpiration(delay.toString());
-                return message;
-            }
+        rabbitTemplate.convertAndSend("delayQueue", map, message1 -> {
+            //设置过期时间，注意：如果是手写延迟队列，则使用setExpiration,如果采用延迟队列插件，则使用setDelay
+            message1.getMessageProperties().setExpiration(delay.toString());
+            return message1;
         });
 
     }
