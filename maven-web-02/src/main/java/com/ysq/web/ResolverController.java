@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 public class ResolverController {
 
     /**
-     * @desc 注意：此参数不能和spring内置的
+     * @desc 注意：此参数不能和spring内置的注解一起使用，否则无法进入自定义解析器中
      * @author yaoShuangQi
-     * @date 2021/6/7 17:22
+     * @date 2021/6/8 13:53
      */
     @RequestMapping("testResolver")
     public String createSession(@ResolverArg String orgId){
