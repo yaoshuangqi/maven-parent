@@ -21,6 +21,7 @@
         <module>maven-java-multi-thread</module>
         <module>maven-springboot-shiro</module>
         <module>maven-springboot-rabbitmq</module>
+        <module>maven-springboot-oauth2</module>
     </modules>
 
     <!--多模块管理方式，父工程的packaing只能是pom-->
